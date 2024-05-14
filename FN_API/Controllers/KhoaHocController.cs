@@ -1,4 +1,6 @@
 ﻿using FN_API.Entities;
+using FN_API.Payloads.DataRequests;
+using FN_API.Services.Implements;
 using FN_API.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,25 +17,31 @@ namespace FN_API.Controllers
             _khoahocService = khoahocService;
         }
         [HttpGet]
-        public IActionResult DanhSachKhoaHoc()
+        public async Task<IActionResult> DanhSachKhoaHoc(int page)
         {
-            return Ok(_khoahocService.DanhSachKh());
+            var khoahoc = await _khoahocService.DanhSachKh(page);
+            return Ok(khoahoc);
         }
         [HttpPost("ThemKhoahoc")]
-        public IActionResult ThemHoaDon(KhoaHoc khoaHoc)
+        public async Task<IActionResult> ThemHoaDon(Data_RequetKhoaHoc khoaHoc)
         {
-            return Ok(_khoahocService.ThemKhoaHoc(khoaHoc));
+            return Ok(await _khoahocService.ThemKhoaHoc(khoaHoc));
+        }
+        [HttpPost("timkiemtheoten")]
+        public async Task<IActionResult> TimKiemKhoaHocTheoTen(string TenKhoaHoc, int page)
+        {
+            return Ok(await _khoahocService.TimKiemKhoaHocTheoTen(TenKhoaHoc,page));
         }
 
         [HttpPut]
-        public IActionResult SuaKhoaHoc(KhoaHoc khoaHoc)
+        public async Task<IActionResult> SuaKhoaHoc(Data_RequetKhoaHoc khoaHoc)
         {
-            return Ok(_khoahocService.SuaKhoaHoc(khoaHoc));
+            return Ok(await _khoahocService.SuaKhoaHoc(khoaHoc));
         }
         [HttpDelete]
-        public IActionResult XoaKhoaHoc(int khoaHocId)
+        public async Task<IActionResult> XoaKhoaHoc(int khoaHocId)
         {
-            return Ok(_khoahocService.XoaKhoaHoc(khoaHocId));
+            return Ok(await _khoahocService.XoaKhoaHoc(khoaHocId));
         }
     }
 }

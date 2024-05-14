@@ -1,4 +1,5 @@
 using FN_API.Entities;
+using FN_API.Payloads.DataRequests;
 using FN_API.Payloads.Responses;
 using FN_API.Services.Implements;
 using FN_API.Services.Interfaces;
@@ -12,8 +13,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IKhoaHocService, KhoaHocService>();
-builder.Services.AddSingleton<ResponseObject<KhoaHoc>>();
-builder.Services.AddSingleton<ResponseObject<List<KhoaHoc>>>();
+builder.Services.AddScoped<ILoaiKhoaHocService, LoaiKhoaHocService>();
+builder.Services.AddScoped<IHocVienService, HocVienService>();
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -28,5 +32,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.UseStaticFiles();
 app.Run();
