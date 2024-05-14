@@ -42,7 +42,7 @@ namespace FN_API.Services.Implements
                 var obj = await _context.LoaiKhoaHoc.SingleOrDefaultAsync(c => c.LoaiKhoaHocId == khoahocid);
                 if (obj == null)
                 {
-                    return _responseObject.ResponseSuccses("Sửa không thành công", null);
+                    return _responseObject.ResponseError(400,"Sửa không thành công", null);
                 }
                 obj.TenLoai = TenLoaiKhoaHoc.Trim();
                  _context.LoaiKhoaHoc.Update(obj);

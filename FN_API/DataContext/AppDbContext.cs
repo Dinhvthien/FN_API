@@ -14,9 +14,11 @@ namespace FN_API.DataContext
         public DbSet<LoaiKhoaHoc> LoaiKhoaHoc { get; set; }
         public DbSet<QuyenHan> QuyenHan { get; set; }
         public DbSet<TaiKhoan> TaiKhoan { get; set; }
+        public DbSet<TinhTrangHoc> TinhTrangHoc { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer($"Server=DESKTOP-VVKT5NE\\SQLEXPRESS;database=FN_API;trusted_connection=true;");
+            optionsBuilder.UseSqlServer($"Server=DESKTOP-JLCKB92\\THIENCHINTE12;database=FN_API;trusted_connection=true;");
         }
     }
 }

@@ -1,8 +1,11 @@
-﻿using FN_API.Payloads.DataRequests;
+﻿using FN_API.Entities;
+using FN_API.Payloads.DataRequests;
+using FN_API.Services;
 using FN_API.Services.Implements;
 using FN_API.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace FN_API.Controllers
 {
@@ -12,10 +15,12 @@ namespace FN_API.Controllers
     {
         private readonly IHocVienService _hocvienService;
         private readonly IWebHostEnvironment _env;
-        public HocVienController(IHocVienService hocvienService, IWebHostEnvironment env)
+        private readonly ILogger _logger;
+        private readonly IFileService _fileService;
+        public HocVienController(IHocVienService hocvienService, IFileService fileService)
         {
             _hocvienService = hocvienService;
-            _env = env;
+            _fileService = fileService;
         }
         [HttpGet]
         public async Task<IActionResult> DanhSachHocVien(int page)
@@ -24,31 +29,38 @@ namespace FN_API.Controllers
             return Ok(hocvien);
         }
         [HttpPost("Themhocvien")]
-        public async Task<IActionResult> ThemHocVien(IFormFile file, Data_RequestHocVien hocVien)
+        public async Task<IActionResult> ThemHocVien([FromForm] Data_RequestHocVien hocVien)
         {
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("No file uploaded.");
-            }
 
-            // Đảm bảo thư mục lưu trữ ảnh tồn tại
-            var uploadPath = Path.Combine(_env.WebRootPath, "uploads");
-            if (!Directory.Exists(uploadPath))
+            try
             {
-                Directory.CreateDirectory(uploadPath);
-            }
+                if (hocVien.image?.Length > 1 * 1024 * 1024)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "File size should not exceed 1 MB");
+                }
+                string[] allowedFileExtentions = {".jpg", ".jpeg", ".png"};
+                string createdImageName = await _fileService.SaveFileAsync(hocVien.image, allowedFileExtentions);
 
-            // Tạo tên tệp duy nhất và lưu tệp
-            var fileName = Path.GetRandomFileName() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadPath, fileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
+                // mapping `ProductDTO` to `Product` manually. You can use automapper.
+                var hocvien = new HocVien
+                {
+                    Hoten = hocVien.Hoten,
+                    NgaySinh = hocVien.NgaySinh,
+                    SoDienThoai = hocVien.SoDienThoai,
+                    Email = hocVien.Email,
+                    TinhThanh = hocVien.TinhThanh,
+                    QuanHuyen = hocVien.QuanHuyen,
+                    PhuongXa = hocVien.PhuongXa,
+                    HinhAnh = createdImageName,
+                    SoNha = hocVien.SoNha
+                };
+                return Ok(await _hocvienService.ThemHocVien(hocvien));
+
+            }
+            catch (Exception ex)
             {
-                await file.CopyToAsync(stream);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-
-            // Tạo URL của ảnh
-            var imageUrl = $"/uploads/{fileName}";
-            return Ok(await _hocvienService.ThemHocVien(imageUrl, hocVien));
         }
         [HttpPost("timkiemtheoten")]
         public async Task<IActionResult> TimKiemKhoaHocTheoTen(string TenKhoaHoc, int page)
@@ -57,13 +69,62 @@ namespace FN_API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> SuaHocVien(Data_RequestHocVien khoaHoc)
+        public async Task<IActionResult> SuaHocVien(int id ,[FromForm] Data_requestUpdateHV hocvien)
         {
-            return Ok(await _hocvienService.Suahocvien(khoaHoc));
+            try
+            {
+                if (id != hocvien.HocVienId)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, $"id in url and form body does not match.");
+                }
+
+                var existingHocVien = await _hocvienService.Timtheoid(id);
+                if (existingHocVien == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, $"Product with id: {id} does not found");
+                }
+                string oldImage = existingHocVien.HinhAnh;
+                if (hocvien.image != null)
+                {
+                    if (hocvien.image?.Length > 1 * 1024 * 1024)
+                    {
+                        return StatusCode(StatusCodes.Status400BadRequest, "File size should not exceed 1 MB");
+                    }
+                    string[] allowedFileExtentions = { ".jpg", ".jpeg", ".png" };
+                    string createdImageName = await _fileService.SaveFileAsync(hocvien.image, allowedFileExtentions);
+                    hocvien.imageold = createdImageName;
+                }
+
+                // mapping `ProductDTO` to `Product` manually. You can use automapper.
+                existingHocVien.HocVienId = (int)hocvien.HocVienId;
+                existingHocVien.Hoten = hocvien.Hoten;
+                existingHocVien.NgaySinh = hocvien.NgaySinh;
+                existingHocVien.SoDienThoai = hocvien.SoDienThoai;
+                existingHocVien.Email = hocvien.Email;
+                existingHocVien.TinhThanh = hocvien.TinhThanh;
+                existingHocVien.QuanHuyen = hocvien.QuanHuyen;
+                existingHocVien.PhuongXa = hocvien.PhuongXa;
+                existingHocVien.HinhAnh = hocvien.imageold;
+                existingHocVien.SoNha = hocvien.SoNha;
+
+            
+                if (hocvien.image != null)
+                    _fileService.DeleteFile(oldImage);
+
+                return Ok(await _hocvienService.Suahocvien(existingHocVien));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
         [HttpDelete]
         public async Task<IActionResult> XoaHocVien(int hocvienid)
         {
+            var existingHocVien = await _hocvienService.Timtheoid(hocvienid);
+
+            if (existingHocVien.HinhAnh != null)
+                _fileService.DeleteFile(existingHocVien.HinhAnh);
             return Ok(await _hocvienService.XoaHocvien(hocvienid));
         }
     }

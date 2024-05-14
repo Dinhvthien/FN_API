@@ -1,11 +1,13 @@
 ﻿namespace FN_API.Payloads.DataRequests
 {
-    public class Data_RequestHocVien
+    public class Data_requestUpdateHV
     {
         public int? HocVienId { get; set; }
         public string? Hoten { get; set; }
         public DateTime? NgaySinh { get; set; }
         public string? SoDienThoai { get; set; }
+        public string? imageold { get; set; }
+
         public IFormFile? image { get; set; }
         public string? Email { get; set; }
         public string? TinhThanh { get; set; }

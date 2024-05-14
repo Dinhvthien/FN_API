@@ -1,8 +1,10 @@
 using FN_API.Entities;
 using FN_API.Payloads.DataRequests;
 using FN_API.Payloads.Responses;
+using FN_API.Services;
 using FN_API.Services.Implements;
 using FN_API.Services.Interfaces;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IKhoaHocService, KhoaHocService>();
 builder.Services.AddScoped<ILoaiKhoaHocService, LoaiKhoaHocService>();
 builder.Services.AddScoped<IHocVienService, HocVienService>();
+builder.Services.AddScoped<ITinhTrangHocService, TinhTrangHocService>();
+builder.Services.AddScoped<IFileService, FileService>();
+
 
 
 
@@ -32,5 +37,10 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
+    RequestPath = "/Resources"
+});
 app.Run();

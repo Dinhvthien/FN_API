@@ -6,6 +6,7 @@ using FN_API.Payloads.DataResponses;
 using FN_API.Payloads.Responses;
 using FN_API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Globalization;
 
 namespace FN_API.Services.Implements
@@ -50,27 +51,27 @@ namespace FN_API.Services.Implements
             TextInfo textInfo = CultureInfo.CurrentCulture.TextInfo;
             return textInfo.ToTitleCase(name.ToLower());
         }
-        public async Task<ResponseObject<DataResponseHocVien>> Suahocvien(Data_RequestHocVien item)
+        public async Task<ResponseObject<DataResponseHocVien>> Suahocvien(HocVien item)
         {
             try
             {
                 var HocVienResponse = await _context.HocVien.SingleOrDefaultAsync(c => c.HocVienId == item.HocVienId);
-                if (_context.HocVien.Any(c => c.Email == item.Email))
+                if (_context.HocVien.Any(c => c.Email == item.Email && c.HocVienId != item.HocVienId))
                 {
                     return _responseObject.ResponseError(400, "Email của bạn đã có trong hệ thông ", null);
                 }
-                if (_context.HocVien.Any(c => c.SoDienThoai.Trim() == item.SoDienThoai.Trim()))
+                if (_context.HocVien.Any(c => c.SoDienThoai.Trim() == item.SoDienThoai.Trim() && c.HocVienId != item.HocVienId))
                 {
-                    return _responseObject.ResponseError(400, "Số điện thoạ của bạn đã có trong hệ thông ", null);
+                    return _responseObject.ResponseError(400, "Số điện thoại của bạn đã có trong hệ thông ", null);
                 }
-                HocVienResponse.Hoten = FormatName(item.Hoten);
+                HocVienResponse.Hoten = FormatName(item.Hoten.Trim());
                 HocVienResponse.NgaySinh = item.NgaySinh;
                 HocVienResponse.SoDienThoai = item.SoDienThoai;
                 HocVienResponse.Email = item.Email;
                 HocVienResponse.TinhThanh = item.TinhThanh;
                 HocVienResponse.QuanHuyen = item.QuanHuyen;
                 HocVienResponse.PhuongXa = item.PhuongXa;
-                //HocVienResponse.HinhAnh = item.HinhAnh;
+                HocVienResponse.HinhAnh = item.HinhAnh;
                 HocVienResponse.SoNha = item.SoNha;
                 _context.HocVien.Update(HocVienResponse);
                 await _context.SaveChangesAsync();
@@ -83,19 +84,27 @@ namespace FN_API.Services.Implements
             }
         }
 
-        public async Task<ResponseObject<DataResponseHocVien>> ThemHocVien(string url ,Data_RequestHocVien item)
+        public async Task<ResponseObject<DataResponseHocVien>> ThemHocVien(HocVien item)
         {
             try
             {
+                if (_context.HocVien.Any(c => c.Email == item.Email))
+                {
+                    return _responseObject.ResponseError(400, "Email của bạn đã có trong hệ thông ", null);
+                }
+                if (_context.HocVien.Any(c => c.SoDienThoai.Trim() == item.SoDienThoai.Trim()))
+                {
+                    return _responseObject.ResponseError(400, "Số điện thoại của bạn đã có trong hệ thông ", null);
+                }
                 HocVien HocVienResponse = new HocVien();
-                HocVienResponse.Hoten = item.Hoten;
+                HocVienResponse.Hoten = FormatName(item.Hoten.Trim());
                 HocVienResponse.NgaySinh = item.NgaySinh;
                 HocVienResponse.SoDienThoai = item.SoDienThoai;
                 HocVienResponse.Email = item.Email;
                 HocVienResponse.TinhThanh = item.TinhThanh;
                 HocVienResponse.QuanHuyen = item.QuanHuyen;
                 HocVienResponse.PhuongXa = item.PhuongXa;
-                HocVienResponse.HinhAnh = url;
+                HocVienResponse.HinhAnh = item.HinhAnh;
                 HocVienResponse.SoNha = item.SoNha;
                 await _context.HocVien.AddAsync(HocVienResponse);
                 await _context.SaveChangesAsync();
@@ -144,6 +153,12 @@ namespace FN_API.Services.Implements
                 Console.WriteLine(e.Message);
                 return false;
             }
+        }
+
+        public async Task<HocVien> Timtheoid(int id)
+        {
+            var product = await _context.HocVien.SingleOrDefaultAsync(c=>c.HocVienId == id);
+            return product;
         }
     }
 }
