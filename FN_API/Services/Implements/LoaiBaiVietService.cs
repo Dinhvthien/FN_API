@@ -27,6 +27,7 @@ namespace FN_API.Services.Implements
                 pageSize = (pageSize <= 0) ? 10 : pageSize;
                 var totalItems = await _context.LoaiBaiViet.CountAsync();
                 var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                totalPages = (totalPages <= 0) ? 1 : totalPages;
 
                 var listTTh = await _context.LoaiBaiViet
                                         .Skip((page - 1) * pageSize)
@@ -58,7 +59,7 @@ namespace FN_API.Services.Implements
                 var obj = await _context.LoaiBaiViet.SingleOrDefaultAsync(c => c.LoaiBaiVietId == loaibaivietid);
                 obj.TenLoai = tenloaibaiviet;
                 DataResponseLoaiBaiViet dataResponseQH = new DataResponseLoaiBaiViet();
-                dataResponseQH.TenLoai = tenloaibaiviet ;
+                dataResponseQH.TenLoai = tenloaibaiviet;
                 dataResponseQH.LoaiBaiVietId = obj.LoaiBaiVietId;
                 if (obj == null)
                 {
@@ -75,14 +76,44 @@ namespace FN_API.Services.Implements
             }
         }
 
-        public Task<ResponseObject<DataResponseLoaiBaiViet>> ThemLoaiBaiViet(string tenloaibaiviet)
+        public async Task<ResponseObject<DataResponseLoaiBaiViet>> ThemLoaiBaiViet(string tenloaibaiviet)
         {
-            throw new NotImplementedException();
+            try
+            {
+                LoaiBaiViet quyenHan = new LoaiBaiViet();
+                quyenHan.TenLoai = tenloaibaiviet;
+                await _context.LoaiBaiViet.AddAsync(quyenHan);
+                await _context.SaveChangesAsync();
+                DataResponseLoaiBaiViet dataResponseQH = new DataResponseLoaiBaiViet();
+                dataResponseQH.LoaiBaiVietId = quyenHan.LoaiBaiVietId;
+                dataResponseQH.TenLoai = tenloaibaiviet;
+                return _responseObject.ResponseSuccses("Thêm thành công", dataResponseQH);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return _responseObject.ResponseError(400, "Thêm không thành công", null);
+            }
         }
 
-        public Task<bool> XoaLoaiBaiViet(int loaibaivietid)
+        public async Task<bool> XoaLoaiBaiViet(int loaibaivietid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var obj = await  _context.LoaiBaiViet.SingleOrDefaultAsync(c => c.LoaiBaiVietId == loaibaivietid);
+                if (obj == null)
+                {
+                    return false;
+                }
+                _context.LoaiBaiViet.Remove(obj);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
         }
     }
 }

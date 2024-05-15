@@ -42,19 +42,26 @@ namespace FN_API.Services.Implements
 
         public async Task<ResponseObject<DataResponseKhoaHoc>> SuaKhoaHoc(Data_RequetKhoaHoc khoaHoc)
         {
-            var finkhoahoc = await _context.KhoaHoc.SingleOrDefaultAsync(c => c.KhoaHocId == khoaHoc.KhoaHocId);
-            finkhoahoc.TenKhoaHoc = khoaHoc.TenKhoaHoc;
-            finkhoahoc.ThoiGianHoc = khoaHoc.ThoiGianHoc;
-            finkhoahoc.GioiThieu = khoaHoc.GioiThieu;
-            finkhoahoc.HocPhi = khoaHoc.HocPhi;
-            finkhoahoc.NoiDung = khoaHoc.NoiDung;
-            finkhoahoc.SoHocVien = khoaHoc.SoHocVien;
-            finkhoahoc.SoLuongMon = khoaHoc.SoLuongMon;
-            finkhoahoc.HinhAnh = khoaHoc.HinhAnh;
-            finkhoahoc.LoaiKhoaHocId = khoaHoc.LoaiKhoaHocId;
-            _context.KhoaHoc.Update(finkhoahoc);
-            await _context.SaveChangesAsync();
-            return _responseObject.ResponseSuccses("Sửa khóa học thành công", await _khConverter.DataRespomseChiTietHoaDon(khoaHoc));
+            try
+            {
+                var finkhoahoc = await _context.KhoaHoc.SingleOrDefaultAsync(c => c.KhoaHocId == khoaHoc.KhoaHocId);
+                finkhoahoc.TenKhoaHoc = khoaHoc.TenKhoaHoc;
+                finkhoahoc.ThoiGianHoc = khoaHoc.ThoiGianHoc;
+                finkhoahoc.GioiThieu = khoaHoc.GioiThieu;
+                finkhoahoc.HocPhi = khoaHoc.HocPhi;
+                finkhoahoc.NoiDung = khoaHoc.NoiDung;
+                finkhoahoc.SoHocVien = khoaHoc.SoHocVien;
+                finkhoahoc.SoLuongMon = khoaHoc.SoLuongMon;
+                finkhoahoc.HinhAnh = khoaHoc.HinhAnh;
+                finkhoahoc.LoaiKhoaHocId = khoaHoc.LoaiKhoaHocId;
+                _context.KhoaHoc.Update(finkhoahoc);
+                await _context.SaveChangesAsync();
+                return _responseObject.ResponseSuccses("Sửa khóa học thành công", await _khConverter.DataRespomseChiTietHoaDon(khoaHoc));
+            }
+            catch (Exception)
+            {
+                return _responseObject.ResponseError(400,"Sửa khóa học không thành công",null);
+            }
         }
 
         public async Task<ResponseObject<DataResponseKhoaHoc>> ThemKhoaHoc(Data_RequetKhoaHoc khoaHoc)

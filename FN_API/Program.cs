@@ -20,6 +20,7 @@ builder.Services.AddScoped<IHocVienService, HocVienService>();
 builder.Services.AddScoped<ITinhTrangHocService, TinhTrangHocService>();
 builder.Services.AddScoped<IQuyenHanService, QuyenHanService>();
 builder.Services.AddScoped<ITaiKhoanService, TaiKhoanService>();
+builder.Services.AddScoped<ILoaiBaiVietServices, LoaiBaiVietService>();
 
 builder.Services.AddScoped<IFileService, FileService>();
 
