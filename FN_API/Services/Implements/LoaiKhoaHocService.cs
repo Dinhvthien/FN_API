@@ -31,7 +31,7 @@ namespace FN_API.Services.Implements
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return _responseListObject.ResponseError(400,"Sửa không thành công", null);
+                return _responseListObject.ResponseError(400,"không thành công", null);
             }
         }
 
@@ -47,7 +47,7 @@ namespace FN_API.Services.Implements
                 obj.TenLoai = TenLoaiKhoaHoc.Trim();
                  _context.LoaiKhoaHoc.Update(obj);
                 await _context.SaveChangesAsync();
-                return _responseObject.ResponseSuccses("Thêm thành công", obj);
+                return _responseObject.ResponseSuccses("Sửa thành công", obj);
             }
             catch (Exception e)
             {

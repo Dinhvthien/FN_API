@@ -15,11 +15,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IKhoaHocService, KhoaHocService>();
+builder.Services.AddScoped<IChuDeService, ChuDeService>();
 builder.Services.AddScoped<ILoaiKhoaHocService, LoaiKhoaHocService>();
 builder.Services.AddScoped<IHocVienService, HocVienService>();
 builder.Services.AddScoped<ITinhTrangHocService, TinhTrangHocService>();
 builder.Services.AddScoped<IQuyenHanService, QuyenHanService>();
 builder.Services.AddScoped<ITaiKhoanService, TaiKhoanService>();
+builder.Services.AddScoped<IBaiVietService, BaiVietService>();
 builder.Services.AddScoped<ILoaiBaiVietServices, LoaiBaiVietService>();
 
 builder.Services.AddScoped<IFileService, FileService>();

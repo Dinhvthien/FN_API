@@ -14,8 +14,6 @@ namespace FN_API.Controllers
     public class HocVienController : ControllerBase
     {
         private readonly IHocVienService _hocvienService;
-        private readonly IWebHostEnvironment _env;
-        private readonly ILogger _logger;
         private readonly IFileService _fileService;
         public HocVienController(IHocVienService hocvienService, IFileService fileService)
         {
