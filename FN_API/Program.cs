@@ -16,6 +16,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IKhoaHocService, KhoaHocService>();
 builder.Services.AddScoped<IChuDeService, ChuDeService>();
+builder.Services.AddScoped<IDangKyHocService, DangKyHocService>();
 builder.Services.AddScoped<ILoaiKhoaHocService, LoaiKhoaHocService>();
 builder.Services.AddScoped<IHocVienService, HocVienService>();
 builder.Services.AddScoped<ITinhTrangHocService, TinhTrangHocService>();

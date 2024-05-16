@@ -19,7 +19,7 @@ namespace FN_API.Controllers
             var khoahoc = await _tinhTrangHocService.DanhSachTTH();
             return Ok(khoahoc);
         }
-        [HttpPost("themquyenhan")]
+        [HttpPost("themtinhtrang")]
         public async Task<IActionResult> ThemLoaiKhoaHoc(string name)
         {
             return Ok(await _tinhTrangHocService.ThemTinhTrangHoc(name));

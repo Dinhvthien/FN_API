@@ -50,13 +50,12 @@ namespace FN_API.Services.Implements
                 finkhoahoc.GioiThieu = khoaHoc.GioiThieu;
                 finkhoahoc.HocPhi = khoaHoc.HocPhi;
                 finkhoahoc.NoiDung = khoaHoc.NoiDung;
-                finkhoahoc.SoHocVien = khoaHoc.SoHocVien;
                 finkhoahoc.SoLuongMon = khoaHoc.SoLuongMon;
                 finkhoahoc.HinhAnh = khoaHoc.HinhAnh;
                 finkhoahoc.LoaiKhoaHocId = khoaHoc.LoaiKhoaHocId;
                 _context.KhoaHoc.Update(finkhoahoc);
                 await _context.SaveChangesAsync();
-                return _responseObject.ResponseSuccses("Sửa khóa học thành công", await _khConverter.DataRespomseChiTietHoaDon(khoaHoc));
+                return _responseObject.ResponseSuccses("Sửa khóa học thành công", await _khConverter.DataRespomseChiTietHoaDon(finkhoahoc));
             }
             catch (Exception)
             {
@@ -66,20 +65,27 @@ namespace FN_API.Services.Implements
 
         public async Task<ResponseObject<DataResponseKhoaHoc>> ThemKhoaHoc(Data_RequetKhoaHoc khoaHoc)
         {
-            var finkhoahoc = new KhoaHoc();
-            finkhoahoc.KhoaHocId = khoaHoc.KhoaHocId;
-            finkhoahoc.TenKhoaHoc = khoaHoc.TenKhoaHoc;
-            finkhoahoc.ThoiGianHoc = khoaHoc.ThoiGianHoc;
-            finkhoahoc.GioiThieu = khoaHoc.GioiThieu;
-            finkhoahoc.HocPhi = khoaHoc.HocPhi;
-            finkhoahoc.NoiDung = khoaHoc.NoiDung;
-            finkhoahoc.SoHocVien = khoaHoc.SoHocVien;
-            finkhoahoc.SoLuongMon = khoaHoc.SoLuongMon;
-            finkhoahoc.HinhAnh = khoaHoc.HinhAnh;
-            finkhoahoc.LoaiKhoaHocId = khoaHoc.LoaiKhoaHocId;
-            await _context.KhoaHoc.AddAsync(finkhoahoc);
-            await _context.SaveChangesAsync();
-            return _responseObject.ResponseSuccses("Them khóa học thành công", await _khConverter.DataRespomseChiTietHoaDon(khoaHoc));
+            try
+            {
+                var finkhoahoc = new KhoaHoc();
+                finkhoahoc.KhoaHocId = khoaHoc.KhoaHocId;
+                finkhoahoc.TenKhoaHoc = khoaHoc.TenKhoaHoc;
+                finkhoahoc.ThoiGianHoc = khoaHoc.ThoiGianHoc;
+                finkhoahoc.GioiThieu = khoaHoc.GioiThieu;
+                finkhoahoc.HocPhi = khoaHoc.HocPhi;
+                finkhoahoc.NoiDung = khoaHoc.NoiDung;
+                finkhoahoc.SoHocVien = 0;
+                finkhoahoc.SoLuongMon = khoaHoc.SoLuongMon;
+                finkhoahoc.HinhAnh = khoaHoc.HinhAnh;
+                finkhoahoc.LoaiKhoaHocId = khoaHoc.LoaiKhoaHocId;
+                await _context.KhoaHoc.AddAsync(finkhoahoc);
+                await _context.SaveChangesAsync();
+                return _responseObject.ResponseSuccses("Them khóa học thành công", await _khConverter.DataRespomseChiTietHoaDon(finkhoahoc));
+            }
+            catch (Exception)
+            {
+                return _responseObject.ResponseError(400,"Có lỗi xẩy ra", null);
+            }
         }
 
         public async Task<ResponseObject<List<DataResponseKhoaHoc>>> TimKiemKhoaHocTheoTen(string name, int page)
@@ -87,7 +93,7 @@ namespace FN_API.Services.Implements
             try
             {
                 page = (page <= 0) ? 1 : page;
-                var FindKhoaHoc = (await _context.KhoaHoc.Where(c => c.TenKhoaHoc.Trim().ToLower().Contains(name.Trim().ToLower())).ToListAsync()).Skip(((page - 1) * page_size)).Take(page_size); ;
+                var FindKhoaHoc = (await _context.KhoaHoc.Where(c => c.TenKhoaHoc.Trim().ToLower().Contains(name.Trim().ToLower())).ToListAsync()).Skip(((page - 1) * page_size)).Take(page_size).ToList();
                 if (FindKhoaHoc == null)
                 {
                     return _responselistObject.ResponseError(400, "Tìm khóa học thành công", null);

@@ -21,29 +21,29 @@ namespace FN_API.Payloads.Converters
                 DataResponseKhoaHoc khoaHocResponse = new DataResponseKhoaHoc();
                 khoaHocResponse.KhoaHocId = item.KhoaHocId;
                 khoaHocResponse.TenKhoaHoc = item.TenKhoaHoc;
-                khoaHocResponse.ThoiGianHoc = item.ThoiGianHoc;
+                khoaHocResponse.ThoiGianHoc = (int)item.ThoiGianHoc;
                 khoaHocResponse.GioiThieu = item.GioiThieu;
-                khoaHocResponse.HocPhi = item.HocPhi;
+                khoaHocResponse.HocPhi = (float)item.HocPhi;
                 khoaHocResponse.NoiDung = item.NoiDung;
-                khoaHocResponse.SoHocVien = item.SoHocVien;
-                khoaHocResponse.SoLuongMon = item.SoLuongMon;
+                khoaHocResponse.SoHocVien = (int)item.SoHocVien;
+                khoaHocResponse.SoLuongMon = (int)item.SoLuongMon;
                 khoaHocResponse.HinhAnh = item.HinhAnh;
                 khoaHocResponse.tenloaikhoahoc = (await _context.LoaiKhoaHoc.SingleOrDefaultAsync(c => c.LoaiKhoaHocId == item.LoaiKhoaHocId)).TenLoai;
                 danhSachKhoaHoc.Add(khoaHocResponse);
             }
             return danhSachKhoaHoc;
         }
-        public async Task<DataResponseKhoaHoc> DataRespomseChiTietHoaDon(Data_RequetKhoaHoc data)
+        public async Task<DataResponseKhoaHoc> DataRespomseChiTietHoaDon(KhoaHoc data)
         {
             DataResponseKhoaHoc khoaHocResponse = new DataResponseKhoaHoc();
             khoaHocResponse.KhoaHocId = data.KhoaHocId;
             khoaHocResponse.TenKhoaHoc = data.TenKhoaHoc;
-            khoaHocResponse.ThoiGianHoc = data.ThoiGianHoc;
+            khoaHocResponse.ThoiGianHoc = (int)data.ThoiGianHoc;
             khoaHocResponse.GioiThieu = data.GioiThieu;
-            khoaHocResponse.HocPhi = data.HocPhi;
+            khoaHocResponse.HocPhi = (float)data.HocPhi;
             khoaHocResponse.NoiDung = data.NoiDung;
-            khoaHocResponse.SoHocVien = data.SoHocVien;
-            khoaHocResponse.SoLuongMon = data.SoLuongMon;
+            khoaHocResponse.SoHocVien = (int)data.SoHocVien;
+            khoaHocResponse.SoLuongMon = (int)data.SoLuongMon;
             khoaHocResponse.HinhAnh = data.HinhAnh;
             khoaHocResponse.tenloaikhoahoc = (await _context.LoaiKhoaHoc.SingleOrDefaultAsync(c => c.LoaiKhoaHocId == data.LoaiKhoaHocId)).TenLoai;
             return khoaHocResponse;
